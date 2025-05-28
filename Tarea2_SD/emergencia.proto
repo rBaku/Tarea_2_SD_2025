@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package emergencia;
+
+option go_package = "./emergencia";
+
+message Emergencia {
+  string name = 1;
+  float latitude = 2;
+  float longitude = 3;
+  int32 magnitude = 4;
+}
+
+message EmergenciasRequest {
+  repeated Emergencia emergencias = 1;
+}
+
+message EmergenciaAsignada {
+  int32 emergency_id = 1;
+  string name = 2;
+  float latitude = 3;
+  float longitude = 4;
+  int32 magnitude = 5;
+  string dron_id = 6;
+}
+
+// Respuesta simple
+message Respuesta {
+  string mensaje = 1;
+}
+
+message MensajeMonitoreo {
+  string contenido = 1;
+}
+
+message Vacio {}
+
+
+service Asignador {
+  rpc EnviarEmergencias (EmergenciasRequest) returns (Respuesta);
+}
+
+service Dron {
+  rpc AtenderEmergencia (EmergenciaAsignada) returns (Respuesta);
+}
+
+service Monitoreo {
+  rpc StreamMensajes(Vacio) returns (stream MensajeMonitoreo);
+}
