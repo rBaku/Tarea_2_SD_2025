@@ -30,7 +30,7 @@ type servidorAsignador struct {
 var nombresDrones = []string{"dron01", "dron02", "dron03"}
 
 func conectarMongo() *mongo.Collection {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://10.10.28.57:27017"))
 	if err != nil {
 		log.Fatalf("Error conectando a MongoDB: %v", err)
 	}
@@ -38,7 +38,7 @@ func conectarMongo() *mongo.Collection {
 }
 
 func conectarRabbit() *amqp.Channel {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@10.10.28.57:5672/")
 	if err != nil {
 		log.Fatalf("Error conectando a RabbitMQ: %v", err)
 	}
@@ -81,7 +81,7 @@ func (s *servidorAsignador) EnviarEmergencias(ctx context.Context, req *pb.Emerg
 
 		log.Printf("Emergencia enviada a registro: %s (ID: %d)", e.Name, doc["emergency_id"])
 
-		conn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+		conn, err := grpc.Dial("10.10.28.58:50052", grpc.WithInsecure())
 		if err != nil {
 			log.Fatalf("Error conectando con dron: %v", err)
 		}
@@ -97,7 +97,7 @@ func (s *servidorAsignador) EnviarEmergencias(ctx context.Context, req *pb.Emerg
 			DronId:      dron.ID,
 		})
 		if err != nil {
-			log.Printf("❌ Error enviando emergencia al dron: %v", err)
+			log.Printf("Error enviando emergencia al dron: %v", err)
 		}
 
 		s.mu.Unlock()

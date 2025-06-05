@@ -2,13 +2,13 @@ import pika
 import json
 from pymongo import MongoClient
 
-connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+connection = pika.BlockingConnection(pika.ConnectionParameters("10.10.28.57"))
 channel = connection.channel()
 
 channel.queue_declare(queue="registro_emergencias")
 channel.queue_declare(queue="apagar_emergencias")
 
-client = MongoClient("localhost", 27017)
+client = MongoClient("10.10.28.57", 27017)
 db = client.emergencias_db
 col = db.emergencias
 

@@ -46,7 +46,7 @@ func (s *servidorMonitoreo) StreamMensajes(_ *pb.Vacio, stream pb.Monitoreo_Stre
 
 		err := stream.Send(&pb.MensajeMonitoreo{Contenido: msg})
 		if err != nil {
-			log.Println("❌ Error enviando mensaje de monitoreo:", err)
+			log.Println("Error enviando mensaje de monitoreo:", err)
 			return err
 		}
 		time.Sleep(5 * time.Second) // Esperar 5 segundos antes de enviar el siguiente
@@ -54,13 +54,13 @@ func (s *servidorMonitoreo) StreamMensajes(_ *pb.Vacio, stream pb.Monitoreo_Stre
 }
 
 func main() {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@10.10.28.57:5672/")
 	if err != nil {
-		log.Fatalf("❌ No se pudo conectar a RabbitMQ: %v", err)
+		log.Fatalf("No se pudo conectar a RabbitMQ: %v", err)
 	}
 	ch, err := conn.Channel()
 	if err != nil {
-		log.Fatalf("❌ No se pudo abrir canal en RabbitMQ: %v", err)
+		log.Fatalf("No se pudo abrir canal en RabbitMQ: %v", err)
 	}
 	ch.QueueDeclare("acciones_dron", false, false, false, false, nil)
 
@@ -75,7 +75,7 @@ func main() {
 
 	lis, err := net.Listen("tcp", ":50053")
 	if err != nil {
-		log.Fatalf("❌ No se pudo escuchar en el puerto 50053: %v", err)
+		log.Fatalf("No se pudo escuchar en el puerto 50053: %v", err)
 	}
 
 	srv := grpc.NewServer()
@@ -83,6 +83,6 @@ func main() {
 
 	fmt.Println("Servicio de monitoreo escuchando en puerto 50053...")
 	if err := srv.Serve(lis); err != nil {
-		log.Fatalf("❌ Fallo al servir gRPC: %v", err)
+		log.Fatalf("Fallo al servir gRPC: %v", err)
 	}
 }

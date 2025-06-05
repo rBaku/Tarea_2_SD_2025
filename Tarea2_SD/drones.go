@@ -40,7 +40,7 @@ func insertarDrones(col *mongo.Collection) {
 }
 
 func conectarMongo() *mongo.Collection {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017"))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://10.10.28.57:27017"))
 	if err != nil {
 		log.Fatal("Mongo error:", err)
 	}
@@ -50,7 +50,7 @@ func conectarMongo() *mongo.Collection {
 }
 
 func conectarRabbit() *amqp.Channel {
-	conn, _ := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, _ := amqp.Dial("amqp://guest:guest@10.10.28.57:5672/")
 	ch, _ := conn.Channel()
 	ch.QueueDeclare("acciones_dron", false, false, false, false, nil)
 	ch.QueueDeclare("apagar_emergencias", false, false, false, false, nil)
