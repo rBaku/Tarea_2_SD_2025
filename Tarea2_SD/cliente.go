@@ -52,14 +52,14 @@ func main() {
 		log.Fatalf("Error cargando emergencias: %v", err)
 	}
 
-	conn1, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	conn1, err := grpc.Dial("10.10.28.57:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("No se pudo conectar al servicio de asignación: %v", err)
 	}
 	defer conn1.Close()
 	client := pb.NewAsignadorClient(conn1)
 
-	conn2, err := grpc.Dial("localhost:50053", grpc.WithInsecure())
+	conn2, err := grpc.Dial("10.10.28.56:50053", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("No se pudo conectar al servicio de monitoreo: %v", err)
 	}
