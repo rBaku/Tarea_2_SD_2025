@@ -2,12 +2,21 @@ import pika
 import json
 from pymongo import MongoClient
 
-connection = pika.BlockingConnection(pika.ConnectionParameters("10.10.28.57"))
+# Configuración de credenciales para RabbitMQ
+credentials = pika.PlainCredentials('rodolfo', '123')  # Reemplaza con tus credenciales
+parameters = pika.ConnectionParameters(
+    host="10.10.28.57",
+    credentials=credentials
+)
+
+# Establecer conexión con RabbitMQ
+connection = pika.BlockingConnection(parameters)
 channel = connection.channel()
 
 channel.queue_declare(queue="registro_emergencias")
 channel.queue_declare(queue="apagar_emergencias")
 
+# Conexión a MongoDB (aquí también podrías necesitar credenciales)
 client = MongoClient("10.10.28.57", 27017)
 db = client.emergencias_db
 col = db.emergencias
