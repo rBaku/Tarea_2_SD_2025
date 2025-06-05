@@ -38,7 +38,7 @@ func conectarMongo() *mongo.Collection {
 }
 
 func conectarRabbit() *amqp.Channel {
-	conn, err := amqp.Dial("amqp://guest:guest@10.10.28.57:5672/")
+	conn, err := amqp.Dial("amqp://rodolfo:123@10.10.28.57:5672/")
 	if err != nil {
 		log.Fatalf("Error conectando a RabbitMQ: %v", err)
 	}
