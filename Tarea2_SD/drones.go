@@ -50,7 +50,7 @@ func conectarMongo() *mongo.Collection {
 }
 
 func conectarRabbit() *amqp.Channel {
-	conn, _ := amqp.Dial("amqp://guest:guest@10.10.28.57:5672/")
+	conn, _ := amqp.Dial("amqp://rodolfo:123@10.10.28.57:5672/")
 	ch, _ := conn.Channel()
 	ch.QueueDeclare("acciones_dron", false, false, false, false, nil)
 	ch.QueueDeclare("apagar_emergencias", false, false, false, false, nil)

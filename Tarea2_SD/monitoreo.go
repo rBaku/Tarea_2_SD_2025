@@ -54,7 +54,7 @@ func (s *servidorMonitoreo) StreamMensajes(_ *pb.Vacio, stream pb.Monitoreo_Stre
 }
 
 func main() {
-	conn, err := amqp.Dial("amqp://guest:guest@10.10.28.57:5672/")
+	conn, err := amqp.Dial("amqp://rodolfo:123@10.10.28.57:5672/")
 	if err != nil {
 		log.Fatalf("No se pudo conectar a RabbitMQ: %v", err)
 	}
