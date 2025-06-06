@@ -25,18 +25,18 @@ El archivo database.mongo contiene los 3 drones iniciales que se insertan en la 
 En este orden
 1. **En 58 (MV3)**
    ```bash
-   go run Tarea_2_SD_2025/Tarea2_SD/drones.go
+   go run -C Tarea_2_SD_2025/Tarea2_SD drones.go
 
 2. **En 57 (MV2):**
    ```bash
-   go run Tarea_2_SD_2025/Tarea2_SD/asignacion.go
+   go run -C Tarea_2_SD_2025/Tarea2_SD asignaciones.go
    python3 Tarea_2_SD_2025/Tarea2_SD/registro.py
    
 3. **En 56 (MV1):**
    ```bash
-   go run Tarea_2_SD_2025/Tarea2_SD/monitoreo.go
+   go run -C Tarea_2_SD_2025/Tarea2_SD monitoreo.go
    
 4. **En 56 nuevamente**
   ```bash
-   go run Tarea_2_SD_2025/Tarea2_SD/cliente.go emergencia.json
+   go run -C Tarea_2_SD_2025/Tarea2_SD cliente.go emergencia.json
 
