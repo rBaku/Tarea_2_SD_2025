@@ -38,5 +38,5 @@ En este orden
    
 4. **En 56 nuevamente**
   ```bash
-  Tarea_2_SD_2025/Tarea2_SD/ go run cliente.go emergencia.json
+   go run Tarea_2_SD_2025/Tarea2_SD/cliente.go emergencia.json
 
