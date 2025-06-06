@@ -37,7 +37,7 @@ En este orden
   ```bash
   Tarea_2_SD_2025/Tarea2_SD/ go run cliente.go emergencia.json
 
-### Consideracion
+## Consideracion
 Database.mongo contiene los 3 drones iniciales que se insertan en la colección `drones` de la base de datos `emergencias_db`.  
 Puede ser utilizado con `mongoimport` para poblar manualmente la base si se requiere, aunque NO es necesario ya que drones.go inserta los drones en
 la coleccion 'drones' de la base de datos 'emergencias_db', si se prefiere poblarla con este metodo usar el comando mongoimport --db emergencias_db --collection drones --file database.mongo y asegurese de estar en el path Tarea2_SD.
