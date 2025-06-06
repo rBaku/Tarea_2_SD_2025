@@ -9,27 +9,27 @@
 | Rodolfo Osorio Verdejo | 201973014-2|             |
 
 ## Instrucciones de uso
-El ideal por ahora (favor de cambiar cuando esté listo) de qué máquina virtual será qué tenemos:
+Con respecto a las máquinas y sus componentes tenemos:
 
 | Máquina                 | Componente              |
 |------------------------|--------------------------|
-| Terminada en 56        | Cliente y Servicio de monitoreo   |
-| Terminada en 57        | Servicio de asignación, Servicio de registro y MongoDB  |
-| Terminada en 58        | Sistema de drones|             |
+| (MV1)Terminada en 56        | Cliente y Servicio de monitoreo   |
+| (MV2)Terminada en 57        | Servicio de asignación, Servicio de registro y MongoDB  |
+| (MV3)Terminada en 58        | Sistema de drones|             |
 
 ### Comandos a ejecutar
 (Completar)
 En este orden
-1. **En 57:**
+1. **En 57 (MV2):**
    ```bash
-   python3 path_3/registro.py
-   go run path_2/asignacion.go
-2. **En 56:**
+   python3 Tarea_2_SD_2025/Tarea2_SD/registro.py
+   go run Tarea_2_SD_2025/Tarea2_SD/asignacion.go
+2. **En 56 (MV1):**
    ```bash
-   go run path_4/monitoreo.go
-3. **En 58**
+   go run Tarea_2_SD_2025/Tarea2_SD/monitoreo.go
+3. **En 58 (MV3)**
    ```bash
-   go run path_5/drones.go
-4.**En 56 nuevamente**
+   go run Tarea_2_SD_2025/Tarea2_SD/drones.go
+4. **En 56 nuevamente**
   ```bash
-  ./cliente emergencia.json
+  Tarea_2_SD_2025/Tarea2_SD/ go run cliente.go emergencia.json
