@@ -3,7 +3,7 @@ import json
 from pymongo import MongoClient
 
 # Configuración de credenciales para RabbitMQ
-credentials = pika.PlainCredentials('rodolfo', '123')  # Reemplaza con tus credenciales
+credentials = pika.PlainCredentials('rodolfo', '123') 
 parameters = pika.ConnectionParameters(
     host="10.10.28.57",
     credentials=credentials
@@ -21,12 +21,31 @@ client = MongoClient("10.10.28.57", 27017)
 db = client.emergencias_db
 col = db.emergencias
 
+#    Callback para procesar mensajes de registro de emergencias.
+#    Parámetros:
+#        ch: Canal de RabbitMQ
+#        method: Metadatos del mensaje
+#        properties: Propiedades del mensaje
+#        body: Cuerpo del mensaje (bytes)      
+#    Acciones:
+#        1. Decodifica el mensaje JSON
+#        2. Verifica si la emergencia ya existe en MongoDB
+#        3. Si no existe, la inserta en la colección
 def registrar_emergencia(ch, method, properties, body):
     data = json.loads(body)
     existing = col.find_one({"emergency_id": data["emergency_id"]})
     if not existing:
         col.insert_one(data)
 
+#    Callback para actualizar el estado de una emergencia a "Extinguido".
+#    Parámetros:
+#        ch: Canal de RabbitMQ
+#        method: Metadatos del mensaje
+#        properties: Propiedades del mensaje
+#        body: Cuerpo del mensaje (bytes)        
+#    Acciones:
+#        1. Decodifica el mensaje JSON
+#        2. Actualiza el estado de la emergencia en MongoDB
 def actualizar_estado(ch, method, properties, body):
     data = json.loads(body)
     emergency_id = data["emergency_id"]

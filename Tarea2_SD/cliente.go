@@ -21,6 +21,11 @@ type Emergencia struct {
 	Magnitude int     `json:"magnitude"`
 }
 
+// cargarEmergencias lee y decodifica un archivo JSON con datos de emergencias
+//
+// Parámetros: path string: Ruta del archivo JSON a cargar
+//
+// Retorna: []Emergencia: Lista de emergencias cargadas
 func cargarEmergencias(path string) ([]Emergencia, error) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -37,9 +42,21 @@ func cargarEmergencias(path string) ([]Emergencia, error) {
 	return emergencias, nil
 }
 
+// containsExtinguido verifica si un mensaje contiene la cadena "ha sido extinguido"
+//
+// Parámetros: msg string: Mensaje a verificar
+//
+// Retorna: bool: true si el mensaje contiene la cadena, false en caso contrario
 func containsExtinguido(msg string) bool {
 	return strings.Contains(msg, "ha sido extinguido")
 }
+
+// main hace lo siguiente:
+// 1. Carga las emergencias desde un archivo JSON
+// 2. Establece conexión con los servicios gRPC de asignación y monitoreo
+// 3. Envía cada emergencia al servicio de asignación
+// 4. Monitorea las respuestas del servicio de monitoreo
+// 5. Espera confirmación de que cada emergencia ha sido atendida
 
 func main() {
 	if len(os.Args) != 2 {

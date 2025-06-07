@@ -29,6 +29,8 @@ type servidorAsignador struct {
 
 var nombresDrones = []string{"dron01", "dron02", "dron03"}
 
+// conectarMongo conecta a MongoDB y devuelve la colección "drones" de la BD "emergencias_db".
+// Si falla la conexión, el programa se cierra mostrando el error.
 func conectarMongo() *mongo.Collection {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://10.10.28.57:27017"))
 	if err != nil {
@@ -37,6 +39,8 @@ func conectarMongo() *mongo.Collection {
 	return client.Database("emergencias_db").Collection("drones")
 }
 
+// conectarRabbit establece conexión con RabbitMQ, declara dos colas y devuelve un canal.
+// Si falla en cualquier paso, el programa termina mostrando el error.
 func conectarRabbit() *amqp.Channel {
 	conn, err := amqp.Dial("amqp://rodolfo:123@10.10.28.57:5672/")
 	if err != nil {
@@ -51,6 +55,7 @@ func conectarRabbit() *amqp.Channel {
 	return ch
 }
 
+// publicarJSON convierte datos a JSON y los publica en una cola RabbitMQ especificada.
 func publicarJSON(ch *amqp.Channel, cola string, data interface{}) {
 	body, _ := json.Marshal(data)
 	ch.Publish("", cola, false, false, amqp.Publishing{
@@ -59,6 +64,21 @@ func publicarJSON(ch *amqp.Channel, cola string, data interface{}) {
 	})
 }
 
+// EnviarEmergencias procesa una lista de emergencias y las asigna al dron más cercano.
+//
+// Para cada emergencia:
+// 1. Bloquea el mutex para acceso concurrente seguro
+// 2. Obtiene el dron disponible más cercano a la ubicación de la emergencia
+// 3. Actualiza el estado del dron a "ocupado" en MongoDB
+// 4. Registra la emergencia en la base de datos
+// 5. Publica la emergencia en la cola RabbitMQ
+// 6. Envía la emergencia al dron via gRPC
+// 7. Espera confirmación de finalización
+//
+// Retorna:
+//
+//	*pb.Respuesta: Confirmación de procesamiento
+//	error: Si ocurre algún error durante el proceso
 func (s *servidorAsignador) EnviarEmergencias(ctx context.Context, req *pb.EmergenciasRequest) (*pb.Respuesta, error) {
 	for _, e := range req.Emergencias {
 		s.mu.Lock()
@@ -113,6 +133,7 @@ func (s *servidorAsignador) EnviarEmergencias(ctx context.Context, req *pb.Emerg
 	return &pb.Respuesta{Mensaje: "Emergencias procesadas correctamente"}, nil
 }
 
+// obtenerDronMasCercano devuelve el ID del dron disponible más cercano a las coordenadas (x,y)
 func obtenerDronMasCercano(col *mongo.Collection, x, y float32) struct{ ID string } {
 	cursor, _ := col.Find(context.TODO(), bson.M{"status": "available"})
 	var drones []bson.M
@@ -134,10 +155,18 @@ func obtenerDronMasCercano(col *mongo.Collection, x, y float32) struct{ ID strin
 
 var idActual = 0
 
+// obtenerNuevoID devuelve un ID numérico autoincremental
 func obtenerNuevoID() int {
 	idActual++
 	return idActual
 }
+
+// main inicia el servidor gRPC para el servicio de asignación de emergencias.
+//
+// Configura:
+// 1. Conexión a MongoDB (conectarMongo)
+// 2. Conexión a RabbitMQ (conectarRabbit)
+// 3. Servidor gRPC escuchando en puerto 50051
 
 func main() {
 	lis, err := net.Listen("tcp", ":50051")

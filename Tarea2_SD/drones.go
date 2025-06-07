@@ -24,6 +24,11 @@ type servidorDron struct {
 	mongoDB *mongo.Collection
 }
 
+// insertarDrones inicializa la base de datos con drones disponibles si no existen
+//
+// Parámetros:
+//
+//	col *mongo.Collection: Colección MongoDB donde insertar los drones
 func insertarDrones(col *mongo.Collection) {
 	drones := []interface{}{
 		bson.M{"id": "dron01", "latitude": 0.0, "longitude": 0.0, "status": "available"},
@@ -39,6 +44,11 @@ func insertarDrones(col *mongo.Collection) {
 	}
 }
 
+// conectarMongo establece conexión con MongoDB y asegura que existan drones iniciales
+//
+// Retorna:
+//
+//	*mongo.Collection: Referencia a la colección de drones
 func conectarMongo() *mongo.Collection {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://10.10.28.57:27017"))
 	if err != nil {
@@ -49,6 +59,11 @@ func conectarMongo() *mongo.Collection {
 	return col
 }
 
+// conectarRabbit establece conexión con RabbitMQ y declara las colas necesarias
+//
+// Retorna:
+//
+//	*amqp.Channel: Canal de comunicación RabbitMQ
 func conectarRabbit() *amqp.Channel {
 	conn, _ := amqp.Dial("amqp://rodolfo:123@10.10.28.57:5672/")
 	ch, _ := conn.Channel()
@@ -58,6 +73,13 @@ func conectarRabbit() *amqp.Channel {
 	return ch
 }
 
+// publicarTexto envía un mensaje de texto a una cola RabbitMQ específica
+//
+// Parámetros:
+//
+//	ch *amqp.Channel: Canal RabbitMQ
+//	cola string: Nombre de la cola destino
+//	msg string: Mensaje a enviar
 func publicarTexto(ch *amqp.Channel, cola, msg string) {
 	ch.Publish("", cola, false, false, amqp.Publishing{
 		ContentType: "text/plain",
@@ -65,6 +87,13 @@ func publicarTexto(ch *amqp.Channel, cola, msg string) {
 	})
 }
 
+// publicarJSON serializa datos a JSON y los publica en una cola RabbitMQ
+//
+// Parámetros:
+//
+//	ch *amqp.Channel: Canal RabbitMQ
+//	cola string: Nombre de la cola destino
+//	data interface{}: Datos a serializar como JSON
 func publicarJSON(ch *amqp.Channel, cola string, data interface{}) {
 	body, _ := json.Marshal(data)
 	ch.Publish("", cola, false, false, amqp.Publishing{
@@ -73,6 +102,13 @@ func publicarJSON(ch *amqp.Channel, cola string, data interface{}) {
 	})
 }
 
+// publicarCada5Segundos envía mensajes periódicos durante un tiempo determinado
+//
+// Parámetros:
+//
+//	duracion time.Duration: Tiempo total de envío
+//	mensaje string: Contenido a enviar
+//	canal *amqp.Channel: Canal RabbitMQ a usar
 func publicarCada5Segundos(duracion time.Duration, mensaje string, canal *amqp.Channel) {
 	intervalo := 5 * time.Second
 	total := int(duracion / intervalo)
@@ -95,6 +131,24 @@ func publicarCada5Segundos(duracion time.Duration, mensaje string, canal *amqp.C
 	}
 }
 
+// AtenderEmergencia implementa el servicio gRPC para manejo de emergencias por drones
+//
+// Flujo de operaciones:
+// 1. Actualiza estado del dron a "unavailable"
+// 2. Calcula tiempo de desplazamiento según distancia
+// 3. Publica actualizaciones periódicas del estado
+// 4. Al finalizar, actualiza posición y estado del dron
+// 5. Notifica finalización de emergencia
+//
+// Parámetros:
+//
+//	ctx context.Context: Contexto de ejecución
+//	e *pb.EmergenciaAsignada: Datos de la emergencia asignada
+//
+// Retorna:
+//
+//	*pb.Respuesta: Confirmación de operación
+//	error: Posible error durante el proceso
 func (s *servidorDron) AtenderEmergencia(ctx context.Context, e *pb.EmergenciaAsignada) (*pb.Respuesta, error) {
 	dronID := e.DronId
 	fmt.Printf("%s atendiendo emergencia: %s\n", dronID, e.Name)
@@ -134,6 +188,12 @@ func (s *servidorDron) AtenderEmergencia(ctx context.Context, e *pb.EmergenciaAs
 	return &pb.Respuesta{Mensaje: "Emergencia atendida correctamente"}, nil
 }
 
+// main inicia el servidor gRPC del servicio de drones
+//
+// Configura:
+// 1. Conexión a MongoDB (colección drones)
+// 2. Conexión a RabbitMQ (canal de mensajería)
+// 3. Servidor gRPC escuchando en puerto 50052
 func main() {
 	lis, _ := net.Listen("tcp", ":50052")
 	grpcServer := grpc.NewServer()
